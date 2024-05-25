@@ -17,11 +17,17 @@ class SensorTemperatura:
         self.suscriptores.append(subscriptor) # para dar de alta un subscriptor lo añadimos a la lista
 
     def baja(self, subscriptor):
-        self.suscriptores.remove(subscriptor) # para dar de baja un subscriptor lo sacamos de la lista
+        try:
+            self.suscriptores.remove(subscriptor) # para dar de baja un subscriptor lo sacamos de la lista
+        except ValueError:
+            return None
 
     def notificar_subscriptores(self, temperatura):
         for subscriptor in self.suscriptores:
-            subscriptor.actualizar(temperatura) # para cada subscriptor actualizmos la temperatura
+            try:
+                subscriptor.actualizar(temperatura) # para cada subscriptor actualizmos la temperatura
+            except Exception as e:
+                return f'Error: {e}'
 
 
 # Ahora implementamos el patrón singleton:
@@ -50,3 +56,30 @@ class SistemaIoT:
             raise ValueError("Debe haber susbcriptores")
         else:
             return len(SensorTemperatura().suscriptores) # para contar los subscriptores contamos el número de datos en la lista subscriptores
+        
+
+
+if __name__ == "__main__":
+
+    # Inicializamos las clases:
+    try:
+        subscriptor_1 = Subscriptor()
+        sensor = SensorTemperatura()
+        sistema_iot = SistemaIoT.obtener_instancia()
+
+        sensor.alta(subscriptor_1) # damos de alta al nuevo susbcriptor
+
+        while True: # mientras se cumpla:
+            tiempo = time.time() # tomamos la hora
+
+            temperatura_randomiser = random.uniform(10, 40) # con uniform cogemos una temperatura cualquiera entre esos dos límites
+            sistema_iot.añadir_temperatura(tiempo, temperatura_randomiser) # añadimos el timestamp y la temperatura
+            sensor.notificar_subscriptores(temperatura_randomiser) # notificamos a los subscriptores con el nuevo dato
+
+            if 10 < temperatura_randomiser > 38:
+                sensor.baja(subscriptor_1)
+
+            time.sleep(5) # el proceso se hará cada 5 segundos
+
+    except KeyboardInterrupt:
+        print(f"Se ha interrumpido el bucle") # de esta manera se puede interrumpir el while al hacer Ctrl + C

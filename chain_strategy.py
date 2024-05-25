@@ -60,8 +60,10 @@ class ManejadorUmbral(ManejadorTemperatura):
 
     def manejar_temperatura(self, temperatura):
         umbral = 21 # el umbral será de 21 grados, una temperatura media
+        if umbral != int:
         # Si se supera la temperatura del umbral, saltará un aviso, de lo contrario se notificará una temperatura normal:
-        return "¡Cuidado! ¡Temperatura por encima del umbral!" if temperatura > umbral else "Temperatura normal"
+            return "¡Cuidado! ¡Temperatura por encima del umbral!" if temperatura > umbral else "Temperatura normal"
+        return ValueError
 
 
 class ManejadorIncremento(ManejadorTemperatura):
@@ -77,3 +79,39 @@ class ManejadorIncremento(ManejadorTemperatura):
 
         if temperaturas and (max(temperaturas) - min(temperaturas)) > 10: # si vemos que la diferencia entre el max y el min es mayor que 10:
             print("¡Cuidado! La temperatura ha aumentado más de 10º en los últimos 30 segundos")
+
+
+
+if __name__ == "__main__":
+# Realizamos la misma prueba que en el fichero singleton-observer añadiendo los manejadores:
+    try:
+        subscriptor_1 = Subscriptor()
+        sensor = SensorTemperatura()
+        sistema_iot = SistemaIoT.obtener_instancia()
+
+        # inicializamos dos nuevas clases:
+        manejador_estadisticos_mediadesv = ManejadorEstadisticos(ComputarEstadisticoMediaDesv())
+        manejador_estadisticos_maxmin = ManejadorEstadisticos(ComputarEstadisticoMaxMin())
+        manejador_umbral = ManejadorUmbral()
+
+        sensor.alta(subscriptor_1)
+
+        while True:
+            tiempo = time.time()
+            temperatura_randomiser = random.uniform(10, 40)
+            sistema_iot.añadir_temperatura(tiempo, temperatura_randomiser)
+            sensor.notificar_subscriptores(temperatura_randomiser)
+
+            # hacemos los estadísticos, añadiendo la lista de temperaturas del sistema:
+            print(f"Media , desviación: {manejador_estadisticos_mediadesv.manejar_temperatura(sistema_iot.temperaturas)}")
+            print(f"Cuantiles: {manejador_estadisticos_maxmin.manejar_temperatura(sistema_iot.temperaturas)}")
+            print(f"Umbral: {manejador_umbral.manejar_temperatura(temperatura_randomiser)}")
+
+            if 10 < temperatura_randomiser > 38:
+                sensor.baja(subscriptor_1)
+            
+            time.sleep(5)
+            print("-----------------------")
+
+    except KeyboardInterrupt:
+        print(f"Se ha interrumpido el bucle")
