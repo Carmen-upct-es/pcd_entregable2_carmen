@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="15.1">
+  <zoom_level>8</zoom_level>
+  <element>
+    <id>UMLSequenceAllInOne</id>
+    <coordinates>
+      <x>104</x>
+      <y>24</y>
+      <w>1216</w>
+      <h>928</h>
+    </coordinates>
+    <panel_attributes>title=Procesamiento datos de temperatura
+obj=SensorTemperatura~a ACTOR EXECUTION
+obj=SistemaIoT~b ACTIVE
+obj=ManejadorEstadisticos~c ACTIVE
+obj=ComputarEstadistico~c1 ACTIVE
+obj=ManejadorUmbral~d ACTIVE
+obj=ManejadorIncremento~e ACTIVE
+a-&gt;b : notificar_subscriptores();
+
+a: t
+on=b
+b: contar_susbcriptores();
+off=b
+
+combinedFragment=alt~
+	id2:[count &gt; 0]
+	tick=
+
+on=b
+b: añadir_temperatura();
+
+on=c
+c: manejar_temperatura();
+combinedFragment=opt~
+id3:[manejar_temperatura involves estrategia]
+	tick=
+		 on=c1
+		  c1: calcular_estadistico();
+		  off=c1
+		--
+off=c
+
+on=d
+d: manejar_temperatura();
+off=d
+
+on=e
+e: manejar_temperatura();
+off=e
+
+off=b
+
+	tick=
+..
+	id2:[count = 0]
+	tick=
+	id2-&gt;id1: ValueError("Debe haber susbcriptores")
+--
+off=a;
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>416</x>
+      <y>552</y>
+      <w>200</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+async return</panel_attributes>
+    <additional_attributes>10.0;20.0;230.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>424</x>
+      <y>352</y>
+      <w>192</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;&gt;
+sync call</panel_attributes>
+    <additional_attributes>10.0;20.0;220.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>616</x>
+      <y>472</y>
+      <w>200</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;&gt;
+sync call</panel_attributes>
+    <additional_attributes>10.0;20.0;230.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>616</x>
+      <y>504</y>
+      <w>200</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+async return</panel_attributes>
+    <additional_attributes>10.0;20.0;230.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>416</x>
+      <y>584</y>
+      <w>600</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;&gt;
+sync call</panel_attributes>
+    <additional_attributes>10.0;20.0;730.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>416</x>
+      <y>616</y>
+      <w>600</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+async return</panel_attributes>
+    <additional_attributes>10.0;20.0;730.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>416</x>
+      <y>648</y>
+      <w>792</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;&gt;
+sync call</panel_attributes>
+    <additional_attributes>10.0;20.0;970.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>416</x>
+      <y>672</y>
+      <w>792</w>
+      <h>32</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+async return</panel_attributes>
+    <additional_attributes>10.0;20.0;970.0;20.0</additional_attributes>
+  </element>
+</diagram>

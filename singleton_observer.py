@@ -5,9 +5,11 @@ import time, random
 
 # Primero implementamos el patrón observador:
 class Subscriptor:
+
     def actualizar(self, temperatura):
-        #raise NotImplementedError("Es necesario implementar el método actualizar")
+        #raise NotImplementedError("Es necesario implementar el método actualizar"
         print(f"Nueva temperatura: {temperatura}")
+        return temperatura
 
 class SensorTemperatura:
     def __init__(self):
@@ -54,8 +56,7 @@ class SistemaIoT:
     def contar_subscriptores(self):
         if len(SensorTemperatura().suscriptores) == 0: # si no hay susbscriptores salta un error
             raise ValueError("Debe haber susbcriptores")
-        else:
-            return len(SensorTemperatura().suscriptores) # para contar los subscriptores contamos el número de datos en la lista subscriptores
+        return len(SensorTemperatura().suscriptores) # para contar los subscriptores contamos el número de datos en la lista subscriptores
         
 
 

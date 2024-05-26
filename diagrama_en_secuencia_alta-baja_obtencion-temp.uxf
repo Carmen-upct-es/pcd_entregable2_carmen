@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="15.1">
+  <help_text/>
+  <zoom_level>11</zoom_level>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>11</x>
+      <y>66</y>
+      <w>33</w>
+      <h>77</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLSequenceAllInOne</id>
+    <coordinates>
+      <x>649</x>
+      <y>352</y>
+      <w>495</w>
+      <h>396</h>
+    </coordinates>
+    <panel_attributes>title=Usuario consulta datos
+obj=Usuario~a ACTOR EXECUTION
+obj=SistemaIoT~b ACTIVE
+
+a: t
+on=b
+b:t
+a-&gt;b : obtener_temperatura();
+b-&gt;a: obtiene temperaturas;
+off=b
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLSequenceAllInOne</id>
+    <coordinates>
+      <x>66</x>
+      <y>110</y>
+      <w>495</w>
+      <h>462</h>
+    </coordinates>
+    <panel_attributes>title=Alta/baja subscriptores
+obj=SensorTemperatura~a ACTIVE
+obj=Subscriptor~b ACTIVE
+
+on=a
+a: t
+a-&gt;b : alta(subscriptor);
+a: Añadir suscriptores
+off=a
+
+on=a
+a: t
+a-&gt;b : baja(subscriptor);
+a: Eliminar suscriptores
+off=a
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>

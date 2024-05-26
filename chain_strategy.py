@@ -28,8 +28,15 @@ class ComputarEstadisticoCuantiles(ComputarEstadistico):
         temperaturas_orden_asc = sorted(temperaturas) # ordenamos acendentemente cada temperatura en temperaturas
         total_datos = len(temperaturas_orden_asc)
         cuantil_1 = temperaturas_orden_asc[int(total_datos * 0.25)] # nos aseguramos que sea un entero
+        
+        # ahora calculamos el segundo cuantil: mediana. Para calcularla hay que ver si el total de datos es par o impar:
+        if total_datos % 2 != 0: 
+            mediana = temperaturas_orden_asc[total_datos // 2] # si es impar coge el número de la mitad, es importante hacer división exacta para no salir un float
+        # de lo contrario aplicamos fórmula:
+        mediana = (temperaturas_orden_asc[total_datos // 2 - 1] + temperaturas_orden_asc[total_datos // 2]) / 2
+            
         cuantil_3 = temperaturas_orden_asc[int(total_datos * 0.75)]
-        return cuantil_1, cuantil_3
+        return cuantil_1, mediana, cuantil_3
 
 class ComputarEstadisticoMaxMin(ComputarEstadistico):
     def calcular_estadistico(self, temperaturas): # para ver el max y min es tan simple como utilizar las propias funciones incluídas en python
@@ -49,36 +56,43 @@ class ManejadorEstadisticos(ManejadorTemperatura):
         self.estrategia = estrategia
     
     def manejar_temperatura(self, temperatura):
-        sistema_iot = SistemaIoT.obtener_instancia() # inicializamos una instancia del sistema
-        tiempo = time.time() # tomamos la hora
-    # obtenemos una lista haciendo un map con el primer elemento de temperatura y filtrando las temeperaturas con el tiempo en los últimos 60s:
-        temperaturas = list(map(lambda t: t[1], filter(lambda t: tiempo - t[0] <= 60, sistema_iot.temperaturas)))
-        return self.estrategia.calcular_estadistico(temperaturas) # dejamos que el cálculo de los estadisticos lo haga strategy
+        try:
+            sistema_iot = SistemaIoT.obtener_instancia() # inicializamos una instancia del sistema
+            tiempo = time.time() # tomamos la hora
+        # obtenemos una lista haciendo un map con el primer elemento de temperatura y filtrando las temeperaturas con el tiempo en los últimos 60s:
+            temperaturas = list(map(lambda t: t[1], filter(lambda t: tiempo - t[0] <= 60, sistema_iot.temperaturas)))
+            return self.estrategia.calcular_estadistico(temperaturas) # dejamos que el cálculo de los estadisticos lo haga strategy
+        except Exception as e:
+            raise Exception("Error: " + str(e))
 
 
 class ManejadorUmbral(ManejadorTemperatura):
 
     def manejar_temperatura(self, temperatura):
-        umbral = 21 # el umbral será de 21 grados, una temperatura media
-        if umbral != int:
-        # Si se supera la temperatura del umbral, saltará un aviso, de lo contrario se notificará una temperatura normal:
+        try:
+            umbral = 21 # el umbral será de 21 grados, una temperatura media
+            # Si se supera la temperatura del umbral, saltará un aviso, de lo contrario se notificará una temperatura normal:
             return "¡Cuidado! ¡Temperatura por encima del umbral!" if temperatura > umbral else "Temperatura normal"
-        return ValueError
+        except ValueError:
+            raise ValueError("La temperatura tiene que ser un número")
 
 
 class ManejadorIncremento(ManejadorTemperatura):
 
     def manejar_temperatura(self, temperatura):
-        sistema_iot = SistemaIoT.obtener_instancia() # inicializamos una instancia del sistema
-        tiempo = time.time() # obtenemos la hora actual
+        try:
+            sistema_iot = SistemaIoT.obtener_instancia() # inicializamos una instancia del sistema
+            tiempo = time.time() # obtenemos la hora actual
 
-        if not len(temperatura) > 2:
-            return "Debe haber al menos dos datos de temperatura para poder ver un incremento"
-        # al igual que en ManejadorEstadisticos obtenemos una lista de cada temperatura en los últimos 30s:
-        temperaturas = list(map(lambda t: t[1], filter(lambda t: tiempo - t[0] <= 30, sistema_iot.temperaturas)))
+            if not len(temperatura) > 2:
+                return "Debe haber al menos dos datos de temperatura para poder ver un incremento"
+            # al igual que en ManejadorEstadisticos obtenemos una lista de cada temperatura en los últimos 30s:
+            temperaturas = list(map(lambda t: t[1], filter(lambda t: tiempo - t[0] <= 30, sistema_iot.temperaturas)))
 
-        if temperaturas and (max(temperaturas) - min(temperaturas)) > 10: # si vemos que la diferencia entre el max y el min es mayor que 10:
-            print("¡Cuidado! La temperatura ha aumentado más de 10º en los últimos 30 segundos")
+            if temperaturas and (max(temperaturas) - min(temperaturas)) > 10: # si vemos que la diferencia entre el max y el min es mayor que 10:
+                print("¡Cuidado! La temperatura ha aumentado más de 10º en los últimos 30 segundos")
+        except Exception as e:
+            raise Exception("Error: " + str(e))
 
 
 
